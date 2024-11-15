@@ -7,7 +7,7 @@ import Client, { SubscribeRequest, CommitmentLevel } from "@triton-one/yellowsto
 const token:string = process.env.token!;
 const endpoint:string = process.env.endpoint!;
 console.log(token,endpoint)
-const client = new Client(endpoint, token, { "grpc.max_receive_message_length": 8 * 1024 * 1024,
+const client = new Client(endpoint, token, { "grpc.max_receive_message_length": 128 * 1024 * 1024,
  });
 
 async function test() {
