@@ -1,11 +1,15 @@
 import { configDotenv } from "dotenv";
-configDotenv();
+import bs58 from 'bs58'
+configDotenv()
 import Client, { SubscribeRequest, CommitmentLevel } from "@triton-one/yellowstone-grpc";
+// import {Co}
 
 const token:string = process.env.token!;
 const endpoint:string = process.env.endpoint!;
+console.log(token,endpoint)
+const client = new Client(endpoint, token, { "grpc.max_receive_message_length": 64 * 1024 * 1024,"grpc.max_concurrent_streams": 1024,"grpc.default_compression_algorithm": 2
 
-const client = new Client(endpoint, token, { "grpc.max_receive_message_length": 256 * 1024 * 1024 });
+ });
 
 async function test() {
   // Create a subscription stream.
@@ -13,16 +17,11 @@ async function test() {
 
   // Collecting all incoming events.
   stream.on("data", (data) => {
-    if (data.block && data.block.blockTime && data.block.blockTime.timestamp) {
-        console.log("data", data.block.blockTime.timestamp);
-        
-        console.log('now', Number((Date.now() / 1000).toFixed(1)));
-        // console.log(data)
-    } else {
-        // console.warn("Received data does not contain blockTime:", data);
-        console.log(data)
+    if (data.transaction && data.transaction.transaction && data.transaction.transaction.signature){
+        console.log(bs58.encode(data.transaction.transaction.signature))
+        console.log(Number((Date.now()/1000).toFixed(1)))
     }
-  
+        
   });
 
   // Create a subscription request.
@@ -51,11 +50,21 @@ async function test() {
   const request:SubscribeRequest = {
     "slots": {},
     "accounts": {},
-    "transactions": {},
+    "transactions": {
+        "alltxs":{"accountInclude":["HWEoBxYs7ssKuudEjzjmpfJVX7Dvi7wescFsVx2L5yoY",
+"3AVi9Tg9Uo68tJfuvoKvqKNWKkC5wPdSSdeBnizKZ6jT",
+"DttWaMuVvTiduZRnguLF7jNxTgiMBZ1hyAumKUiL2KRL",
+"ADuUkR4vqLUMWXxW9gh6D6L8pMSawimctcNZ5pGwDcEt",
+"DfXygSm4jCyNCybVYYK6DwvWqjKee8pbDmJGcLWNDXjh",
+"ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49",
+"Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY",
+"HFqU5x63VTqvQss8hp11i4wVV8bD44PvwucfZ2bU7gRe",
+"96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5"],'accountExclude':[],'accountRequired':["6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P","metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s","TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"]}
+    },
     "blocks": {
-      "blocks": {
-        "accountInclude": ["6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"]
-      }
+    //   "blocks": {
+    //     // "accountInclude": 
+    //   }
     },
     "blocksMeta": {},
     "accountsDataSlice": [],
