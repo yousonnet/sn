@@ -1,5 +1,6 @@
 import { configDotenv } from "dotenv";
 import bs58 from 'bs58'
+import {Decimal} from "decimal.js"
 configDotenv()
 import Client, { SubscribeRequest, CommitmentLevel } from "@triton-one/yellowstone-grpc";
 import { parseTransactionData ,calculateVirtualReserve,buyPF,calculateCreatorSolCost} from "./utils";
@@ -38,12 +39,15 @@ async function test() {
         // }
         // console.log(account_keys.length)
         const bond_info = parseTransactionData(tx_data)
-        const {virtualsolreserve,virtualtokenreserve} = calculateVirtualReserve(bond_info!.creator_reserve,bond_info!.total_supply)
-        // const {virtualsolreserve,virtualtokenreserve} = calculateVirtualReserve(bond_info!.creator_reserve,bond_info!.total_supply)
-        console.log(bond_info!.bonding_curve,bond_info!.mint,0.125,0.025,0.00,0.0005,bond_info!.associated_bonding_curve,virtualtokenreserve,virtualsolreserve,block_hash,bond_info!.total_supply)
-        // const amount 
-        const result = await buyPF(bond_info!.bonding_curve,bond_info!.mint,0.125,0.15,0.00,0.002,bond_info!.associated_bonding_curve,virtualtokenreserve,virtualsolreserve,block_hash,bond_info!.total_supply)
-        console.log(result)
+        
+        if (new Decimal(bond_info!.creator_reserve).lessThanOrEqualTo(new Decimal(bond_info!.total_supply).times(0.15))){
+            const {virtualsolreserve,virtualtokenreserve} = calculateVirtualReserve(bond_info!.creator_reserve,bond_info!.total_supply)
+            console.log(bond_info!.bonding_curve,bond_info!.mint,0.125,0.025,0.00,0.0005,bond_info!.associated_bonding_curve,virtualtokenreserve,virtualsolreserve,block_hash,bond_info!.total_supply)
+            const result = await buyPF(bond_info!.bonding_curve,bond_info!.mint,0.125,0.025,0.00,0.0005,bond_info!.associated_bonding_curve,virtualtokenreserve,virtualsolreserve,block_hash,bond_info!.total_supply)
+            console.log(result)
+        }
+        
+        
     }}catch{
         console.log(data)
     }
