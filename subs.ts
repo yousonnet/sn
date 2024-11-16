@@ -2,12 +2,13 @@ import { configDotenv } from "dotenv";
 import bs58 from 'bs58'
 configDotenv()
 import Client, { SubscribeRequest, CommitmentLevel } from "@triton-one/yellowstone-grpc";
+import { parseTransactionData ,calculateVirtualReserve,buyPF,calculateCreatorSolCost} from "./utils";
 // import {Co}
 
 const token:string = process.env.token!;
 const endpoint:string = process.env.endpoint!;
 console.log(token,endpoint)
-const client = new Client(endpoint, token, { "grpc.max_receive_message_length": 128 * 1024 * 1024,
+const client = new Client(endpoint, token, { "grpc.max_receive_message_length": 64 * 1024 * 1024,
  });
 
 async function test() {
@@ -15,10 +16,36 @@ async function test() {
   const stream = await client.subscribe();
 
   // Collecting all incoming events.
-  stream.on("data", (data) => {
-    if (data.transaction && data.transaction.transaction && data.transaction.transaction.signature){
-        console.log(bs58.encode(data.transaction.transaction.signature))
-        console.log(Number((Date.now()/1000).toFixed(1)))
+  stream.on("data", async(data) => {
+    try{
+    if (data.transaction && data.transaction.transaction ){
+        let tx_data = data.transaction.transaction
+        // console.log(data)
+        // console.log(Number((Date.now()/1000).toFixed(1)))
+        const block_hash = bs58.encode(tx_data.transaction.message.recentBlockhash)
+        // console.log(tx_data.meta.innerInstructions)
+        
+        console.log(bs58.encode(tx_data.signature))
+    
+        // console.log('instructions',tx_data.transaction.message.instructions)
+        // console.log(tx_data.meta.postTokenBalances)
+        // const account_keys = (tx_data.transaction.message.accountKeys as Uint8Array[] || []).map((i)=>bs58.encode(i))
+        // console.log(account_keys)
+        // for (let i =0;i<10;i++){
+        //     if (i==1 || i==3 ||i==4){
+        //         console.log(account_keys[i])
+        //     }
+        // }
+        // console.log(account_keys.length)
+        const bond_info = parseTransactionData(tx_data)
+        const {virtualsolreserve,virtualtokenreserve} = calculateVirtualReserve(bond_info!.creator_reserve,bond_info!.total_supply)
+        // const {virtualsolreserve,virtualtokenreserve} = calculateVirtualReserve(bond_info!.creator_reserve,bond_info!.total_supply)
+        console.log(bond_info!.bonding_curve,bond_info!.mint,0.125,1.15,0.00,0.002,bond_info!.associated_bonding_curve,virtualtokenreserve,virtualsolreserve,block_hash,bond_info!.total_supply)
+        // const amount 
+        const result = await buyPF(bond_info!.bonding_curve,bond_info!.mint,0.125,1.15,0.00,0.002,bond_info!.associated_bonding_curve,virtualtokenreserve,virtualsolreserve,block_hash,bond_info!.total_supply)
+        console.log(result)
+    }}catch{
+        console.log(data)
     }
         
   });
