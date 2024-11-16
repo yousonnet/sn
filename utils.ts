@@ -18,7 +18,7 @@ interface SocialDict {
     let x = new Decimal('1.073000191').times(total_supply_decimal).minus(creator_buy_amount_decimal);
 
     // Calculate the virtual SOL reserve (virtual_sol_reserve)
-    let k = new Decimal('3.219000573').times(total_supply_decimal)
+    let k = new Decimal('32.19000573').times(total_supply_decimal)
     let y = k.div(x)
 
     // let sol_buy_amount_decimal =creator_buy_amount_decimal.div(virtual_sol_lamp_buy_ratio)
