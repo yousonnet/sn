@@ -24,7 +24,7 @@ interface SocialDict {
     // let sol_buy_amount_decimal =creator_buy_amount_decimal.div(virtual_sol_lamp_buy_ratio)
     // Return rounded values as strings
     return {
-        virtualsolreserve: y.times(LAMPORTS_PER_SOL).toString(),
+        virtualsolreserve: y.times(LAMPORTS_PER_SOL).round().toString(),
         virtualtokenreserve: x.round().toString()
     };
 }
