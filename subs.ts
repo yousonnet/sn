@@ -40,7 +40,7 @@ async function test() {
         const bond_info = parseTransactionData(tx_data)
         const {virtualsolreserve,virtualtokenreserve} = calculateVirtualReserve(bond_info!.creator_reserve,bond_info!.total_supply)
         // const {virtualsolreserve,virtualtokenreserve} = calculateVirtualReserve(bond_info!.creator_reserve,bond_info!.total_supply)
-        console.log(bond_info!.bonding_curve,bond_info!.mint,0.125,0.025,0.00,0.002,bond_info!.associated_bonding_curve,virtualtokenreserve,virtualsolreserve,block_hash,bond_info!.total_supply)
+        console.log(bond_info!.bonding_curve,bond_info!.mint,0.125,0.025,0.00,0.0005,bond_info!.associated_bonding_curve,virtualtokenreserve,virtualsolreserve,block_hash,bond_info!.total_supply)
         // const amount 
         const result = await buyPF(bond_info!.bonding_curve,bond_info!.mint,0.125,0.15,0.00,0.002,bond_info!.associated_bonding_curve,virtualtokenreserve,virtualsolreserve,block_hash,bond_info!.total_supply)
         console.log(result)
